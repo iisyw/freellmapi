@@ -293,6 +293,12 @@
     "keySelectionAuto": "ავტომატური",
     "keySelectionLeastRemaining": "ყველაზე ნაკლები დარჩენილი",
     "keySelectionHint": "როგორ ხდება არჩევანი ერთი და იმავე პროვაიდერის რამდენიმე გასაღებს შორის. ავტომატური ინარჩუნებს მიმდინარე როტაციას; ყველაზე ნაკლები დარჩენილი ალაგებს გასაღებებს დაფიქსირებული კვოტის მიხედვით და ჯერ იმას სცდის, რომელსაც ყველაზე მეტი დარჩა.",
+    "cooldownCeiling": "ყველაზე ხანგრძლივი ავტომატური გაგრილება",
+    "cooldownCeilingHint": "ზღუდავს, რამდენ ხანს შეუძლია მარშრუტიზატორის საკუთარ ვარაუდებს წარუმატებელი გასაღებისა და მოდელის წყვილის გამორთვა. კიბე ჩვეულებრივ 2 წთ, 10 წთ, 1 სთ, 24 სთ იზრდება, ხოლო კრედიტის ან დონის შეცდომები ერთი დღით გამორთავს. პროვაიდერის მითითებული ხელახლა ცდის დროები არასდროს მცირდება.",
+    "cooldownCeilingDefault": "ნაგულისხმევი (24 სთ-მდე)",
+    "cooldownCeiling10m": "10 წუთი",
+    "cooldownCeiling1h": "1 საათი",
+    "cooldownCeiling6h": "6 საათი",
     "moreOptions": "მეტი პარამეტრი",
     "peakActive": "(პიკის საათები)",
     "peakActiveHint": "პიკის საათების კორექტირება ამჟამად აქტიურია, ამიტომ ეს არ არის თავად წინასწარი პარამეტრის წონები: სიჩქარის წონის 60% გადავიდა საიმედოობაზე.",
@@ -343,6 +349,8 @@
     "noCooldown": "არ არის გაგრილება",
     "cooldownChip": "{key} - {time}",
     "resetCooldown": "Reset cooldown",
+    "clearAll": "ყველას გასუფთავება",
+    "clearAllHint": "ახლავე ხსნის ყველა გაგრილებას, ჯარიმას და წარუმატებლობათა სერიას. წნევა ხელახლა შემდეგი რეალური შედეგებიდან გროვდება.",
     "errorsHeading": "{count} ბოლოდროინდელი შეცდომები",
     "noRecentErrors": "ბოლო შეცდომები არ არის",
     "noKey": "გასაღების გარეშე",
@@ -550,6 +558,8 @@
     "ollamaKeyRequired": "საჭიროა API გასაღები",
     "claudeAliases": "Claude Code აღმოჩენის ალიასები",
     "claudeAliasesHint": "გამოაჩინეთ claude/<model> ალიასები, რომ გეითვეის მოდელის ამრჩევმა შეძლოს კატალოგის ჩამოთვლა.",
+    "mcpServer": "MCP სერვერი",
+    "mcpServerHint": "აქვეყნებს /mcp წერტილს აგენტური კლიენტებისთვის. ახალ ინსტალაციებზე თავიდან გამორთულია.",
     "urlTokensTitle": "გაუქმებადი URL ტოკენები",
     "urlTokensDesc": "მხოლოდ ჰედერების გარეშე კლიენტებისთვის. URL ტოკენები შეიძლება მოხვდეს ისტორიასა და ჟურნალებში, ამიტომ გააუქმეთ ისინი, როცა აღარ გჭირდებათ.",
     "urlTokenLabel": "ტოკენის ლეიბლი",
@@ -712,7 +722,12 @@
     "attemptTimingHint": "ოფსეტის დაწყება მოთხოვნის დაწყებიდან · მცდელობის ხანგრძლივობა",
     "requestedModel": "მოთხოვნილი მოდელი",
     "ttft": "TTFT",
-    "requestsByAgent": "მოთხოვნები აგენტების მიხედვით"
+    "requestsByAgent": "მოთხოვნები აგენტების მიხედვით",
+    "sortBy": "დალაგება: {column}",
+    "sortHint": "დალაგება ვრცელდება მხოლოდ ჩატვირთულ {count} სტრიქონზე",
+    "cacheHitRate": "ქეშის მოხვედრის მაჩვენებელი",
+    "cacheSavedTokens": "დაზოგილია {tokens} ტოკენი",
+    "cacheHitRateHint": "{hits} მოხვედრა {misses} აცდენის წინააღმდეგ სერვერის გაშვებიდან · თავიდან აცილებულია {requests} მოთხოვნა პროვაიდერთან"
   },
   "logs": {
     "title": "ჟურნალი",
@@ -1026,7 +1041,8 @@
       "dsh": "DeepSeek's harness, which keeps every provider as a route you can switch between.",
       "mimo": "Xiaomi's terminal agent, an OpenCode fork that takes any OpenAI-compatible provider.",
       "cursor": "The AI-first editor; it calls through Cursor's cloud, so it needs a public URL.",
-      "generic": "Anything else that speaks the OpenAI API, set up by hand from a base URL and key."
+      "generic": "Anything else that speaks the OpenAI API, set up by hand from a base URL and key.",
+      "atomcode": "AtomGit's terminal agent, written in Rust, that takes any OpenAI-compatible endpoint."
     }
   },
   "update": {

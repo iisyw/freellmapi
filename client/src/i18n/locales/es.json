@@ -293,6 +293,12 @@
     "keySelectionAuto": "Automática",
     "keySelectionLeastRemaining": "Menos restante",
     "keySelectionHint": "Cómo elegir entre varias claves del mismo proveedor. Automática mantiene la rotación actual; Menos restante ordena las claves por la cuota observada y prueba primero la que más le queda.",
+    "cooldownCeiling": "Enfriamiento automático máximo",
+    "cooldownCeilingHint": "Limita cuánto tiempo pueden apartar las propias estimaciones del enrutador a un par clave y modelo que falla. La escalera normalmente sube 2 min, 10 min, 1 h, 24 h, y los errores de saldo o de nivel apartan durante un día. Los tiempos de reintento indicados por el proveedor nunca se acortan.",
+    "cooldownCeilingDefault": "Predeterminado (hasta 24 h)",
+    "cooldownCeiling10m": "10 minutos",
+    "cooldownCeiling1h": "1 hora",
+    "cooldownCeiling6h": "6 horas",
     "moreOptions": "Más opciones",
     "peakActive": "(horas punta)",
     "peakActiveHint": "El ajuste de horas punta está activo ahora mismo, así que estos no son los pesos propios del preajuste: el 60 % del peso de velocidad se ha trasladado a fiabilidad.",
@@ -343,6 +349,8 @@
     "noCooldown": "Sin cooldown",
     "cooldownChip": "{key} - {time}",
     "resetCooldown": "Reset cooldown",
+    "clearAll": "Borrar todo",
+    "clearAllHint": "Levanta ahora todos los enfriamientos, penalizaciones y rachas de fallos. La presión se reconstruye con los próximos resultados reales.",
     "errorsHeading": "{count} errores recientes",
     "noRecentErrors": "Sin errores recientes",
     "noKey": "sin clave",
@@ -550,6 +558,8 @@
     "ollamaKeyRequired": "Se requiere clave de API",
     "claudeAliases": "Alias de detección de Claude Code",
     "claudeAliasesHint": "Expón alias claude/<model> para que el selector de modelos del gateway pueda listar el catálogo.",
+    "mcpServer": "Servidor MCP",
+    "mcpServerHint": "Expone el endpoint /mcp a los clientes de agentes. Las instalaciones nuevas empiezan desactivado.",
     "urlTokensTitle": "Tokens de URL revocables",
     "urlTokensDesc": "Solo para clientes sin cabeceras. Los tokens de URL pueden filtrarse al historial y a los registros, así que revócalos cuando ya no los necesites.",
     "urlTokenLabel": "Etiqueta del token",
@@ -712,7 +722,12 @@
     "attemptTimingHint": "Desfase desde el inicio de la solicitud · duración del intento",
     "requestedModel": "Modelo solicitado",
     "ttft": "TTFT",
-    "requestsByAgent": "Solicitudes por agente"
+    "requestsByAgent": "Solicitudes por agente",
+    "sortBy": "Ordenar por {column}",
+    "sortHint": "La ordenación se aplica a las {count} filas cargadas",
+    "cacheHitRate": "Tasa de aciertos de caché",
+    "cacheSavedTokens": "{tokens} tokens ahorrados",
+    "cacheHitRateHint": "{hits} aciertos frente a {misses} fallos desde el arranque del servidor · {requests} llamadas al proveedor evitadas"
   },
   "logs": {
     "title": "Registros",
@@ -1026,7 +1041,8 @@
       "dsh": "El arnés de DeepSeek, que guarda cada proveedor como una ruta entre las que puedes cambiar.",
       "mimo": "El agente de terminal de Xiaomi, una bifurcación de OpenCode que acepta cualquier proveedor compatible con OpenAI.",
       "cursor": "El editor centrado en la IA; pasa por la nube de Cursor, así que necesita una URL pública.",
-      "generic": "Cualquier otra herramienta que hable la API de OpenAI, configurada a mano con la URL base y la clave."
+      "generic": "Cualquier otra herramienta que hable la API de OpenAI, configurada a mano con la URL base y la clave.",
+      "atomcode": "El agente de terminal de AtomGit, escrito en Rust, que acepta cualquier endpoint compatible con OpenAI."
     }
   },
   "update": {

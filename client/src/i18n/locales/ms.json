@@ -293,6 +293,12 @@
     "keySelectionAuto": "Auto",
     "keySelectionLeastRemaining": "Paling sedikit baki",
     "keySelectionHint": "Cara memilih antara beberapa kunci pembekal yang sama. Auto mengekalkan giliran semasa; Paling sedikit baki menyusun kunci mengikut kuota yang diperhatikan dan mencuba yang paling banyak baki dahulu.",
+    "cooldownCeiling": "Cooldown automatik terpanjang",
+    "cooldownCeilingHint": "Mengehadkan berapa lama tekaan penghala sendiri boleh mengetepikan pasangan kunci dan model yang gagal. Tangga biasanya naik 2 min, 10 min, 1 j, 24 j, dan ralat kredit atau peringkat mengetepikan selama sehari. Masa cuba semula yang dinyatakan pembekal tidak pernah dipendekkan.",
+    "cooldownCeilingDefault": "Lalai (sehingga 24 j)",
+    "cooldownCeiling10m": "10 minit",
+    "cooldownCeiling1h": "1 jam",
+    "cooldownCeiling6h": "6 jam",
     "moreOptions": "Pilihan lain",
     "peakActive": "(waktu puncak)",
     "peakActiveHint": "Pelarasan waktu puncak sedang aktif, jadi ini bukan pemberat praset itu sendiri: 60% pemberat kelajuan telah dipindahkan ke kebolehpercayaan.",
@@ -343,6 +349,8 @@
     "noCooldown": "Tiada masa sejuk",
     "cooldownChip": "{key} - {time}",
     "resetCooldown": "Reset cooldown",
+    "clearAll": "Kosongkan semua",
+    "clearAllHint": "Tarik balik semua cooldown, penalti dan rentetan kegagalan sekarang. Tekanan dibina semula daripada keputusan sebenar seterusnya.",
     "errorsHeading": "{count} ralat terkini",
     "noRecentErrors": "Tiada ralat terkini",
     "noKey": "tiada kunci",
@@ -550,6 +558,8 @@
     "ollamaKeyRequired": "Kunci API diperlukan",
     "claudeAliases": "Alias penemuan Claude Code",
     "claudeAliasesHint": "Dedahkan alias claude/<model> supaya pemilih model gateway dapat menyenaraikan katalog.",
+    "mcpServer": "Pelayan MCP",
+    "mcpServerHint": "Mendedahkan titik akhir /mcp kepada klien ejen. Pemasangan baharu bermula dalam keadaan dimatikan.",
     "urlTokensTitle": "Token URL boleh dibatalkan",
     "urlTokensDesc": "Untuk klien tanpa pengepala sahaja. Token URL boleh bocor ke dalam sejarah dan log, jadi batalkannya apabila tidak lagi diperlukan.",
     "urlTokenLabel": "Label token",
@@ -712,7 +722,12 @@
     "attemptTimingHint": "Offset mula dari permintaan mula · tempoh cubaan",
     "requestedModel": "Model yang diminta",
     "ttft": "TTFT",
-    "requestsByAgent": "Permintaan mengikut ejen"
+    "requestsByAgent": "Permintaan mengikut ejen",
+    "sortBy": "Isih mengikut {column}",
+    "sortHint": "Pengisihan hanya digunakan pada {count} baris yang dimuatkan",
+    "cacheHitRate": "Kadar hit cache",
+    "cacheSavedTokens": "{tokens} token dijimatkan",
+    "cacheHitRateHint": "{hits} hit berbanding {misses} miss sejak pelayan dimulakan · {requests} panggilan pembekal dielakkan"
   },
   "logs": {
     "title": "Log",
@@ -1026,7 +1041,8 @@
       "dsh": "DeepSeek's harness, which keeps every provider as a route you can switch between.",
       "mimo": "Xiaomi's terminal agent, an OpenCode fork that takes any OpenAI-compatible provider.",
       "cursor": "The AI-first editor; it calls through Cursor's cloud, so it needs a public URL.",
-      "generic": "Anything else that speaks the OpenAI API, set up by hand from a base URL and key."
+      "generic": "Anything else that speaks the OpenAI API, set up by hand from a base URL and key.",
+      "atomcode": "AtomGit's terminal agent, written in Rust, that takes any OpenAI-compatible endpoint."
     }
   },
   "update": {

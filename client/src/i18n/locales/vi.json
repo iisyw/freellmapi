@@ -293,6 +293,12 @@
     "keySelectionAuto": "Tự động",
     "keySelectionLeastRemaining": "Còn lại ít nhất",
     "keySelectionHint": "Cách chọn giữa nhiều khóa của cùng một nhà cung cấp. Tự động giữ nguyên vòng xoay hiện tại; Còn lại ít nhất sắp xếp khóa theo hạn mức quan sát được và thử khóa còn nhiều nhất trước.",
+    "cooldownCeiling": "Thời gian chờ tự động dài nhất",
+    "cooldownCeilingHint": "Giới hạn thời gian mà các phỏng đoán của bộ định tuyến được phép loại một cặp khóa và mô hình đang lỗi. Bậc thang thường tăng 2 phút, 10 phút, 1 giờ, 24 giờ, và lỗi hết tín dụng hoặc hạng loại trong một ngày. Thời gian thử lại do nhà cung cấp nêu không bao giờ bị rút ngắn.",
+    "cooldownCeilingDefault": "Mặc định (tối đa 24 giờ)",
+    "cooldownCeiling10m": "10 phút",
+    "cooldownCeiling1h": "1 giờ",
+    "cooldownCeiling6h": "6 giờ",
     "moreOptions": "Tùy chọn khác",
     "peakActive": "(giờ cao điểm)",
     "peakActiveHint": "Điều chỉnh giờ cao điểm đang hoạt động, nên đây không phải là trọng số của chính preset: 60% trọng số tốc độ đã chuyển sang độ tin cậy.",
@@ -343,6 +349,8 @@
     "noCooldown": "Không có thời gian hồi chiêu",
     "cooldownChip": "{key} - {time}",
     "resetCooldown": "Reset cooldown",
+    "clearAll": "Xóa tất cả",
+    "clearAllHint": "Gỡ ngay mọi thời gian chờ, hình phạt và chuỗi lỗi. Áp lực được xây lại từ các kết quả thực tiếp theo.",
     "errorsHeading": "{count} lỗi gần đây",
     "noRecentErrors": "Không có lỗi gần đây",
     "noKey": "không có chìa khóa",
@@ -550,6 +558,8 @@
     "ollamaKeyRequired": "Yêu cầu khóa API",
     "claudeAliases": "Bí danh khám phá Claude Code",
     "claudeAliasesHint": "Hiển thị bí danh claude/<model> để bộ chọn mô hình của cổng có thể liệt kê danh mục.",
+    "mcpServer": "Máy chủ MCP",
+    "mcpServerHint": "Mở endpoint /mcp cho các client tác nhân. Bản cài mới mặc định tắt.",
     "urlTokensTitle": "Mã thông báo URL có thể thu hồi",
     "urlTokensDesc": "Chỉ dành cho các ứng dụng khách không có tiêu đề. Mã thông báo URL có thể bị lộ vào lịch sử và nhật ký, vì vậy hãy thu hồi khi không còn cần thiết.",
     "urlTokenLabel": "Nhãn mã thông báo",
@@ -712,7 +722,12 @@
     "attemptTimingHint": "Bắt đầu bù đắp từ khi bắt đầu yêu cầu · thời gian thử",
     "requestedModel": "Mô hình được yêu cầu",
     "ttft": "TTFT",
-    "requestsByAgent": "Yêu cầu theo tác nhân"
+    "requestsByAgent": "Yêu cầu theo tác nhân",
+    "sortBy": "Sắp xếp theo {column}",
+    "sortHint": "Sắp xếp chỉ áp dụng cho {count} hàng đã tải",
+    "cacheHitRate": "Tỷ lệ trúng bộ nhớ đệm",
+    "cacheSavedTokens": "Tiết kiệm {tokens} token",
+    "cacheHitRateHint": "{hits} lần trúng so với {misses} lần trượt kể từ khi máy chủ khởi động · tránh được {requests} lượt gọi nhà cung cấp"
   },
   "logs": {
     "title": "Nhật ký",
@@ -1026,7 +1041,8 @@
       "dsh": "Bộ khung của DeepSeek, giữ mỗi nhà cung cấp thành một tuyến có thể chuyển đổi.",
       "mimo": "Tác nhân dòng lệnh của Xiaomi, nhánh của OpenCode, nhận mọi nhà cung cấp tương thích OpenAI.",
       "cursor": "Trình soạn thảo lấy AI làm gốc; đi qua đám mây của Cursor nên cần URL công khai.",
-      "generic": "Mọi công cụ khác nói API OpenAI, thiết lập thủ công bằng URL cơ sở và khóa."
+      "generic": "Mọi công cụ khác nói API OpenAI, thiết lập thủ công bằng URL cơ sở và khóa.",
+      "atomcode": "Tác nhân dòng lệnh của AtomGit, viết bằng Rust, nhận mọi điểm cuối tương thích OpenAI."
     }
   },
   "update": {

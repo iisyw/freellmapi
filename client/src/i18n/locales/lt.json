@@ -293,6 +293,12 @@
     "keySelectionAuto": "Automatinis",
     "keySelectionLeastRemaining": "Mažiausiai likę",
     "keySelectionHint": "Kaip renkamasi tarp kelių to paties tiekėjo raktų. Automatinis išlaiko dabartinę rotaciją; Mažiausiai likę surikiuoja raktus pagal stebimą kvotą ir pirmiausia išbando tą, kuriam likę daugiausia.",
+    "cooldownCeiling": "Ilgiausias automatinis atvėsimas",
+    "cooldownCeilingHint": "Riboja, kiek ilgai paties maršrutizatoriaus spėjimai gali nušalinti nesėkmingą rakto ir modelio porą. Laiptai paprastai kyla 2 min, 10 min, 1 val., 24 val., o kredito ar lygio klaidos nušalina parai. Tiekėjo nurodyti pakartojimo laikai niekada netrumpinami.",
+    "cooldownCeilingDefault": "Numatytasis (iki 24 val.)",
+    "cooldownCeiling10m": "10 minučių",
+    "cooldownCeiling1h": "1 valanda",
+    "cooldownCeiling6h": "6 valandos",
     "moreOptions": "Daugiau parinkčių",
     "peakActive": "(piko valandos)",
     "peakActiveHint": "Piko valandų korekcija dabar veikia, todėl tai nėra paties nustatymo svoriai: 60 % greičio svorio perkelta patikimumui.",
@@ -343,6 +349,8 @@
     "noCooldown": "Nėra atvėsimo laiko",
     "cooldownChip": "{key} - {time}",
     "resetCooldown": "Reset cooldown",
+    "clearAll": "Išvalyti viską",
+    "clearAllHint": "Iš karto panaikina visus atvėsimus, baudas ir nesėkmių serijas. Spaudimas vėl kaupiasi iš kitų tikrų rezultatų.",
     "errorsHeading": "{count} pastarųjų klaidų",
     "noRecentErrors": "Jokių naujausių klaidų",
     "noKey": "Be rakto",
@@ -550,6 +558,8 @@
     "ollamaKeyRequired": "Reikalingas API raktas",
     "claudeAliases": "Claude Code aptikimo aliasai",
     "claudeAliasesHint": "Atskleiskite claude/<model> aliasus, kad šliuzo modelių parinkiklis galėtų pateikti katalogą.",
+    "mcpServer": "MCP serveris",
+    "mcpServerHint": "Atveria /mcp galinį tašką agentų klientams. Naujuose diegimuose iš pradžių išjungta.",
     "urlTokensTitle": "Atšaukiami URL žetonai",
     "urlTokensDesc": "Tik klientams be antraščių. URL žetonai gali nutekėti į istoriją ir žurnalus, todėl atšaukite juos, kai nebereikia.",
     "urlTokenLabel": "Žetono etiketė",
@@ -712,7 +722,12 @@
     "attemptTimingHint": "Pradėti poslinkį nuo užklausos pradžios · Bandymo trukmė",
     "requestedModel": "Prašytas modelis",
     "ttft": "TTFT",
-    "requestsByAgent": "Užklausos pagal agentą"
+    "requestsByAgent": "Užklausos pagal agentą",
+    "sortBy": "Rikiuoti pagal {column}",
+    "sortHint": "Rikiavimas taikomas {count} įkeltoms eilutėms",
+    "cacheHitRate": "Podėlio pataikymų dalis",
+    "cacheSavedTokens": "Sutaupyta {tokens} žetonų",
+    "cacheHitRateHint": "{hits} pataikymai prieš {misses} praleidimus nuo serverio paleidimo · išvengta {requests} tiekėjo užklausų"
   },
   "logs": {
     "title": "Žurnalas",
@@ -1026,7 +1041,8 @@
       "dsh": "DeepSeek's harness, which keeps every provider as a route you can switch between.",
       "mimo": "Xiaomi's terminal agent, an OpenCode fork that takes any OpenAI-compatible provider.",
       "cursor": "The AI-first editor; it calls through Cursor's cloud, so it needs a public URL.",
-      "generic": "Anything else that speaks the OpenAI API, set up by hand from a base URL and key."
+      "generic": "Anything else that speaks the OpenAI API, set up by hand from a base URL and key.",
+      "atomcode": "AtomGit's terminal agent, written in Rust, that takes any OpenAI-compatible endpoint."
     }
   },
   "update": {

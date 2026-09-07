@@ -293,6 +293,12 @@
     "keySelectionAuto": "ಸ್ವಯಂ",
     "keySelectionLeastRemaining": "ಅತಿ ಕಡಿಮೆ ಉಳಿದಿರುವುದು",
     "keySelectionHint": "ಒಂದೇ ಪೂರೈಕೆದಾರರ ಹಲವು ಕೀಗಳ ನಡುವೆ ಹೇಗೆ ಆರಿಸುವುದು. ಸ್ವಯಂ ಪ್ರಸ್ತುತ ಸರದಿಯನ್ನು ಉಳಿಸಿಕೊಳ್ಳುತ್ತದೆ; ಅತಿ ಕಡಿಮೆ ಉಳಿದಿರುವುದು ಗಮನಿಸಿದ ಕೋಟಾದ ಪ್ರಕಾರ ಕೀಗಳನ್ನು ಜೋಡಿಸಿ, ಹೆಚ್ಚು ಉಳಿದಿರುವ ಕೀಯನ್ನು ಮೊದಲು ಪ್ರಯತ್ನಿಸುತ್ತದೆ.",
+    "cooldownCeiling": "ಗರಿಷ್ಠ ಸ್ವಯಂಚಾಲಿತ ಕೂಲ್‌ಡೌನ್",
+    "cooldownCeilingHint": "ರೂಟರ್‌ನ ಸ್ವಂತ ಊಹೆಗಳು ವಿಫಲವಾಗುತ್ತಿರುವ ಕೀ ಮತ್ತು ಮಾಡೆಲ್ ಜೋಡಿಯನ್ನು ಎಷ್ಟು ಕಾಲ ಬದಿಗಿಡಬಹುದು ಎಂಬುದನ್ನು ಮಿತಿಗೊಳಿಸುತ್ತದೆ. ಏಣಿ ಸಾಮಾನ್ಯವಾಗಿ 2 ನಿಮಿ, 10 ನಿಮಿ, 1 ಗಂ, 24 ಗಂ ಏರುತ್ತದೆ; ಕ್ರೆಡಿಟ್ ಅಥವಾ ಶ್ರೇಣಿ ದೋಷಗಳು ಒಂದು ದಿನ ಬದಿಗಿಡುತ್ತವೆ. ಪೂರೈಕೆದಾರ ತಿಳಿಸಿದ ಮರುಪ್ರಯತ್ನ ಸಮಯಗಳನ್ನು ಎಂದಿಗೂ ಕಡಿಮೆ ಮಾಡಲಾಗುವುದಿಲ್ಲ.",
+    "cooldownCeilingDefault": "ಡೀಫಾಲ್ಟ್ (24 ಗಂಟೆಗಳವರೆಗೆ)",
+    "cooldownCeiling10m": "10 ನಿಮಿಷಗಳು",
+    "cooldownCeiling1h": "1 ಗಂಟೆ",
+    "cooldownCeiling6h": "6 ಗಂಟೆಗಳು",
     "moreOptions": "ಹೆಚ್ಚಿನ ಆಯ್ಕೆಗಳು",
     "peakActive": "(ದಟ್ಟಣೆಯ ಸಮಯ)",
     "peakActiveHint": "ದಟ್ಟಣೆಯ ಸಮಯದ ಹೊಂದಾಣಿಕೆ ಸದ್ಯ ಸಕ್ರಿಯವಾಗಿದೆ, ಆದ್ದರಿಂದ ಇವು ಪ್ರೀಸೆಟ್‌ನ ಸ್ವಂತ ತೂಕಗಳಲ್ಲ: ವೇಗದ ತೂಕದ 60% ವಿಶ್ವಾಸಾರ್ಹತೆಗೆ ವರ್ಗಾವಣೆಯಾಗಿದೆ.",
@@ -343,6 +349,8 @@
     "noCooldown": "ಕೂಲ್‌ಡೌನ್ ಇಲ್ಲ",
     "cooldownChip": "{key} - {time}",
     "resetCooldown": "Reset cooldown",
+    "clearAll": "ಎಲ್ಲವನ್ನೂ ತೆರವುಗೊಳಿಸಿ",
+    "clearAllHint": "ಎಲ್ಲಾ ಕೂಲ್‌ಡೌನ್‌ಗಳು, ದಂಡಗಳು ಮತ್ತು ವೈಫಲ್ಯ ಸರಣಿಗಳನ್ನು ಈಗಲೇ ತೆಗೆದುಹಾಕಿ. ಮುಂದಿನ ನೈಜ ಫಲಿತಾಂಶಗಳಿಂದ ಒತ್ತಡ ಮತ್ತೆ ರೂಪುಗೊಳ್ಳುತ್ತದೆ.",
     "errorsHeading": "{count} ಇತ್ತೀಚಿನ ದೋಷಗಳು",
     "noRecentErrors": "ಇತ್ತೀಚಿನ ದೋಷಗಳಿಲ್ಲ",
     "noKey": "ಕೀ ಇಲ್ಲ",
@@ -550,6 +558,8 @@
     "ollamaKeyRequired": "API ಕೀ ಅಗತ್ಯವಿದೆ",
     "claudeAliases": "Claude Code ಅನ್ವೇಷಣೆ ಅಲಿಯಾಸ್‌ಗಳು",
     "claudeAliasesHint": "ಗೇಟ್‌ವೇ ಮಾದರಿ ಆಯ್ಕೆಗಾರ ಕ್ಯಾಟಲಾಗ್ ಅನ್ನು ಪಟ್ಟಿ ಮಾಡಲು claude/<model> ಅಲಿಯಾಸ್‌ಗಳನ್ನು ಬಹಿರಂಗಪಡಿಸಿ.",
+    "mcpServer": "MCP ಸರ್ವರ್",
+    "mcpServerHint": "ಏಜೆಂಟ್ ಕ್ಲೈಂಟ್‌ಗಳಿಗಾಗಿ /mcp ಎಂಡ್‌ಪಾಯಿಂಟ್ ತೆರೆಯುತ್ತದೆ. ಹೊಸ ಅನುಸ್ಥಾಪನೆಗಳಲ್ಲಿ ಇದು ಆಫ್ ಆಗಿರುತ್ತದೆ.",
     "urlTokensTitle": "ಹಿಂಪಡೆಯಬಹುದಾದ URL ಟೋಕನ್‌ಗಳು",
     "urlTokensDesc": "ಹೆಡರ್ ಇಲ್ಲದ ಕ್ಲೈಂಟ್‌ಗಳಿಗೆ ಮಾತ್ರ. URL ಟೋಕನ್‌ಗಳು ಇತಿಹಾಸ ಮತ್ತು ಲಾಗ್‌ಗಳಿಗೆ ಸೋರಿಕೆಯಾಗಬಹುದು, ಆದ್ದರಿಂದ ಅಗತ್ಯವಿಲ್ಲದಾಗ ಅವುಗಳನ್ನು ಹಿಂಪಡೆಯಿರಿ.",
     "urlTokenLabel": "ಟೋಕನ್ ಲೇಬಲ್",
@@ -712,7 +722,12 @@
     "attemptTimingHint": "ವಿನಂತಿಯ ಪ್ರಾರಂಭದಿಂದ ಆಫ್‌ಸೆಟ್ ಪ್ರಾರಂಭಿಸಿ · ಪ್ರಯತ್ನದ ಅವಧಿ",
     "requestedModel": "ವಿನಂತಿಸಿದ ಮಾದರಿ",
     "ttft": "TTFT",
-    "requestsByAgent": "ಏಜೆಂಟ್ ಪ್ರಕಾರ ವಿನಂತಿಗಳು"
+    "requestsByAgent": "ಏಜೆಂಟ್ ಪ್ರಕಾರ ವಿನಂತಿಗಳು",
+    "sortBy": "{column} ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ",
+    "sortHint": "ವಿಂಗಡಣೆ ಲೋಡ್ ಆದ {count} ಸಾಲುಗಳಿಗೆ ಮಾತ್ರ ಅನ್ವಯಿಸುತ್ತದೆ",
+    "cacheHitRate": "ಕ್ಯಾಶ್ ಹಿಟ್ ದರ",
+    "cacheSavedTokens": "{tokens} ಟೋಕನ್‌ಗಳ ಉಳಿತಾಯ",
+    "cacheHitRateHint": "ಸರ್ವರ್ ಪ್ರಾರಂಭವಾದಾಗಿನಿಂದ {hits} ಹಿಟ್‌ಗಳು ಮತ್ತು {misses} ಮಿಸ್‌ಗಳು · {requests} ಪೂರೈಕೆದಾರ ಕರೆಗಳನ್ನು ತಪ್ಪಿಸಲಾಗಿದೆ"
   },
   "logs": {
     "title": "ಲಾಗ್‌ಗಳು",
@@ -1026,7 +1041,8 @@
       "dsh": "DeepSeek's harness, which keeps every provider as a route you can switch between.",
       "mimo": "Xiaomi's terminal agent, an OpenCode fork that takes any OpenAI-compatible provider.",
       "cursor": "The AI-first editor; it calls through Cursor's cloud, so it needs a public URL.",
-      "generic": "Anything else that speaks the OpenAI API, set up by hand from a base URL and key."
+      "generic": "Anything else that speaks the OpenAI API, set up by hand from a base URL and key.",
+      "atomcode": "AtomGit's terminal agent, written in Rust, that takes any OpenAI-compatible endpoint."
     }
   },
   "update": {

@@ -293,6 +293,12 @@
     "keySelectionAuto": "Automatycznie",
     "keySelectionLeastRemaining": "Najmniej pozostało",
     "keySelectionHint": "Jak wybierać spośród kilku kluczy tego samego dostawcy. Automatycznie zachowuje bieżącą rotację; Najmniej pozostało porządkuje klucze według zaobserwowanego limitu i najpierw próbuje ten, któremu zostało najwięcej.",
+    "cooldownCeiling": "Najdłuższe automatyczne schłodzenie",
+    "cooldownCeilingHint": "Ogranicza, jak długo własne przypuszczenia routera mogą odstawiać zawodzącą parę klucz i model. Drabina zwykle rośnie: 2 min, 10 min, 1 h, 24 h, a błędy salda lub poziomu odstawiają na dobę. Czasy ponowienia podane przez dostawcę nigdy nie są skracane.",
+    "cooldownCeilingDefault": "Domyślnie (do 24 h)",
+    "cooldownCeiling10m": "10 minut",
+    "cooldownCeiling1h": "1 godzina",
+    "cooldownCeiling6h": "6 godzin",
     "moreOptions": "Więcej opcji",
     "peakActive": "(godziny szczytu)",
     "peakActiveHint": "Korekta na godziny szczytu jest teraz aktywna, więc to nie są wagi samego presetu: 60% wagi szybkości przeniesiono na niezawodność.",
@@ -343,6 +349,8 @@
     "noCooldown": "Brak możliwości odnowienia",
     "cooldownChip": "{key} - {time}",
     "resetCooldown": "Reset cooldown",
+    "clearAll": "Wyczyść wszystko",
+    "clearAllHint": "Natychmiast znosi wszystkie schłodzenia, kary i serie błędów. Presja odbudowuje się z kolejnych rzeczywistych wyników.",
     "errorsHeading": "Ostatnie błędy {count}",
     "noRecentErrors": "Brak ostatnich błędów",
     "noKey": "brak klucza",
@@ -550,6 +558,8 @@
     "ollamaKeyRequired": "Wymagany klucz API",
     "claudeAliases": "Aliasy wykrywania Claude Code",
     "claudeAliasesHint": "Udostępnij aliasy claude/<model>, aby selektor modeli bramy mógł wyświetlić katalog.",
+    "mcpServer": "Serwer MCP",
+    "mcpServerHint": "Udostępnia punkt końcowy /mcp klientom agentowym. Nowe instalacje startują z wyłączonym.",
     "urlTokensTitle": "Odwoływalne tokeny URL",
     "urlTokensDesc": "Tylko dla klientów bez nagłówków. Tokeny URL mogą wyciec do historii i logów, więc odwołuj je, gdy nie są już potrzebne.",
     "urlTokenLabel": "Etykieta tokenu",
@@ -712,7 +722,12 @@
     "attemptTimingHint": "Przesunięcie początku od początku żądania · czas trwania próby",
     "requestedModel": "Żądany model",
     "ttft": "TTFT",
-    "requestsByAgent": "Żądania według agenta"
+    "requestsByAgent": "Żądania według agenta",
+    "sortBy": "Sortuj według: {column}",
+    "sortHint": "Sortowanie dotyczy {count} załadowanych wierszy",
+    "cacheHitRate": "Współczynnik trafień pamięci podręcznej",
+    "cacheSavedTokens": "Zaoszczędzono {tokens} tokenów",
+    "cacheHitRateHint": "{hits} trafień wobec {misses} chybień od startu serwera · uniknięto {requests} wywołań dostawcy"
   },
   "logs": {
     "title": "Logi",
@@ -1026,7 +1041,8 @@
       "dsh": "Uprząż DeepSeeka, w której każdy dostawca to przełączalna trasa.",
       "mimo": "Agent terminalowy Xiaomi, fork OpenCode przyjmujący dowolnego dostawcę zgodnego z OpenAI.",
       "cursor": "Edytor pisany pod AI; działa przez chmurę Cursora, więc potrzebuje publicznego adresu URL.",
-      "generic": "Każde inne narzędzie mówiące API OpenAI, ustawiane ręcznie adresem bazowym i kluczem."
+      "generic": "Każde inne narzędzie mówiące API OpenAI, ustawiane ręcznie adresem bazowym i kluczem.",
+      "atomcode": "Agent terminalowy AtomGit, napisany w Rust, przyjmujący dowolny endpoint zgodny z OpenAI."
     }
   },
   "update": {
