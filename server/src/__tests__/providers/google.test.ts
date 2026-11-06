@@ -90,6 +90,36 @@ describe('GoogleProvider', () => {
     expect(await provider.validateKey('invalid-key')).toMatchObject({ valid: false });
   });
 
+  it.each([false, true])('preserves daily quota evidence with streaming=%s (#1339)', async (stream) => {
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(new Response(JSON.stringify({ error: {
+      message: 'You exceeded your current quota.',
+      details: [
+        { '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [
+          { quotaId: 'GenerateRequestsPerDayPerProjectPerModel-FreeTier' },
+          { quotaId: 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier' },
+        ] },
+        { '@type': 'type.googleapis.com/google.rpc.RetryInfo', retryDelay: '17s' },
+      ],
+    } }), { status: 429 }));
+    const messages = [{ role: 'user' as const, content: 'Hi' }];
+    const request = stream
+      ? provider.streamChatCompletion('test-key', messages, 'gemini-2.5-pro').next()
+      : provider.chatCompletion('test-key', messages, 'gemini-2.5-pro');
+    await expect(request).rejects.toMatchObject({ status: 429, dailyQuotaExhausted: true, retryAfterMs: 17_000 });
+  });
+
+  it.each([
+    [{ '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaId: 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier' }] }],
+    [{ '@type': 'type.googleapis.com/google.rpc.Help', quotaId: 'PerDay' }],
+    [{ '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: null }],
+  ])('does not invent daily exhaustion from other details (%j)', async (...details) => {
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(new Response(JSON.stringify({ error: {
+      message: 'Quota exceeded', details,
+    } }), { status: 429 }));
+    await expect(provider.chatCompletion('test-key', [], 'gemini-2.5-pro'))
+      .rejects.toMatchObject({ dailyQuotaExhausted: false });
+  });
+
   // #268: Google reports a bad key as HTTP 400 INVALID_ARGUMENT / API_KEY_INVALID,
   // not 401/403. A confirmed-bad key must return false (→ auto-disable counter).
   it('validateKey returns false for a genuinely invalid key (HTTP 400 API_KEY_INVALID)', async () => {
@@ -241,6 +271,32 @@ describe('GoogleProvider', () => {
     expect(toolDeltas).toHaveLength(1);
     expect(toolDeltas[0].function.name).toBe('get_weather');
     expect(chunks[chunks.length - 1].choices[0].finish_reason).toBe('tool_calls');
+  });
+
+  it('gives every streamed tool call its own index and id, including parallel calls in one chunk', async () => {
+    vi.spyOn(global, 'fetch').mockImplementation(async () => {
+      const frames = [
+        { candidates: [{ content: { parts: [
+          { functionCall: { name: 'get_weather', args: { city: 'Dublin' } } },
+          { functionCall: { name: 'get_weather', args: { city: 'Paris' } } },
+        ] } }] },
+        { candidates: [{ content: { parts: [{ functionCall: { name: 'get_time', args: { tz: 'UTC' } } }] } }] },
+        { candidates: [{ content: { parts: [] }, finishReason: 'STOP' }] },
+      ];
+      // One body, so every frame is parsed within the same millisecond.
+      return new Response(frames.map(f => `data: ${JSON.stringify(f)}\n\n`).join(''), { status: 200 });
+    });
+
+    const chunks: any[] = [];
+    for await (const c of provider.streamChatCompletion('test-key', [{ role: 'user', content: 'Weather and time?' }], 'gemini-3.5-flash')) chunks.push(c);
+
+    const calls = chunks.flatMap(c => c.choices[0].delta.tool_calls ?? []);
+    expect(calls.map(c => [c.index, c.function.name, c.function.arguments])).toEqual([
+      [0, 'get_weather', '{"city":"Dublin"}'],
+      [1, 'get_weather', '{"city":"Paris"}'],
+      [2, 'get_time', '{"tz":"UTC"}'],
+    ]);
+    expect(new Set(calls.map(c => c.id)).size).toBe(3);
   });
 
   it('keeps functionCall/functionResponse history for Gemma multi-turn tool round-trips (#582)', async () => {

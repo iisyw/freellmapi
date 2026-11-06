@@ -53,6 +53,18 @@ describe('GET /api/keys/providers — provider checklist (#543)', () => {
     expect(groq).toMatchObject({ platform: 'groq', configured: false, keyCount: 0 });
     expect(typeof groq.name).toBe('string');
     expect(typeof groq.keyless).toBe('boolean');
+    expect(body.providers.find((p: { platform: string }) => p.platform === 'moondream'))
+      .toMatchObject({ platform: 'moondream', name: 'Moondream', configured: false, keyless: false });
+    expect(body.providers.find((p: { platform: string }) => p.platform === 'llmtr'))
+      .toMatchObject({ platform: 'llmtr', name: 'LLMTR', configured: false, keyless: false });
+    expect(body.providers.find((p: { platform: string }) => p.platform === 'typhoon'))
+      .toMatchObject({ platform: 'typhoon', name: 'Typhoon', configured: false, keyless: false });
+    expect(body.providers.find((p: { platform: string }) => p.platform === 'plugsky'))
+      .toMatchObject({ platform: 'plugsky', name: 'Plugsky', configured: false, keyless: false });
+    for (const [platform, name] of [['gizmo', 'Gizmo'], ['blockrun', 'BlockRun']]) {
+      expect(body.providers.find((p: { platform: string }) => p.platform === platform))
+        .toMatchObject({ platform, name, configured: false, keyless: false });
+    }
     expect(body.summary).toEqual({
       total: body.providers.length,
       configured: 0,
@@ -68,5 +80,16 @@ describe('GET /api/keys/providers — provider checklist (#543)', () => {
     expect(groq).toMatchObject({ configured: true, keyCount: 1, enabledKeyCount: 1 });
     expect(body.summary.configured).toBe(1);
     expect(body.summary.unconfigured).toBe(body.summary.total - 1);
+  });
+
+  // ACLIDE's dashboard is down, so new users cannot get a key (#1768): it is
+  // not suggested to anyone without one, but an existing key still shows.
+  it('hides an unlisted provider until it has a key', async () => {
+    let { body } = await request(app, '/api/keys/providers');
+    expect(body.providers.some((p: { platform: string }) => p.platform === 'aclide')).toBe(false);
+    addKey('aclide');
+    ({ body } = await request(app, '/api/keys/providers'));
+    expect(body.providers.find((p: { platform: string }) => p.platform === 'aclide'))
+      .toMatchObject({ configured: true, keyCount: 1 });
   });
 });

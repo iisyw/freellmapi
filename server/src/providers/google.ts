@@ -19,6 +19,22 @@ export { sanitizeForGemini } from '../lib/gemini-wire.js';
 
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 
+function googleHttpError(res: Response, body: any) {
+  const err = providerHttpError(res, `Google API error ${res.status}: ${body?.error?.message ?? res.statusText}`, body);
+  // Gemini's human-readable message can omit the quota window. Keep only the
+  // daily signal from QuotaFailure, not the complete upstream payload (#1339).
+  const details = body?.error?.details;
+  if (res.status === 429 && Array.isArray(details)) {
+    err.dailyQuotaExhausted = details.some(detail =>
+      detail?.['@type'] === 'type.googleapis.com/google.rpc.QuotaFailure'
+      && Array.isArray(detail.violations)
+      && detail.violations.some((violation: any) =>
+        typeof violation?.quotaId === 'string' && /PerDay/.test(violation.quotaId)),
+    );
+  }
+  return err;
+}
+
 // Gemini 3 REQUIRES the `thoughtSignature` that accompanied a function call to
 // be echoed back whenever that call appears in conversation history, or it
 // rejects the request with 400 "Function call is missing a thought_sig". But
@@ -476,11 +492,11 @@ async function toGeminiContents(messages: ChatMessage[]): Promise<{
   };
 }
 
-function extractToolCalls(parts: GeminiPart[] | undefined): ChatToolCall[] {
+function extractToolCalls(parts: GeminiPart[] | undefined, firstIndex = 0): ChatToolCall[] {
   const calls: ChatToolCall[] = [];
   if (!parts) return calls;
 
-  let fallbackIndex = 0;
+  let fallbackIndex = firstIndex;
   for (const part of parts) {
     if (!part.functionCall?.name) continue;
 
@@ -560,7 +576,7 @@ export class GoogleProvider extends BaseProvider {
       contents: request.contents,
       generationConfig: {
         temperature: options?.temperature,
-        maxOutputTokens: resolveMaxTokens(this.platform, options?.max_tokens),
+        maxOutputTokens: resolveMaxTokens(this.platform, options?.max_tokens, options?.contextBudget),
         topP: options?.top_p,
         stopSequences: toGeminiStopSequences(options?.stop),
         ...toGeminiExtendedConfig(options),
@@ -592,7 +608,7 @@ export class GoogleProvider extends BaseProvider {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw providerHttpError(res, `Google API error ${res.status}: ${(err as any).error?.message ?? res.statusText}`, err);
+      throw googleHttpError(res, err);
     }
 
     const data = await res.json() as GeminiResponse;
@@ -643,7 +659,7 @@ export class GoogleProvider extends BaseProvider {
       contents: request.contents,
       generationConfig: {
         temperature: options?.temperature,
-        maxOutputTokens: resolveMaxTokens(this.platform, options?.max_tokens),
+        maxOutputTokens: resolveMaxTokens(this.platform, options?.max_tokens, options?.contextBudget),
         topP: options?.top_p,
         stopSequences: toGeminiStopSequences(options?.stop),
         ...toGeminiExtendedConfig(options),
@@ -673,7 +689,7 @@ export class GoogleProvider extends BaseProvider {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw providerHttpError(res, `Google API error ${res.status}: ${(err as any).error?.message ?? res.statusText}`, err);
+      throw googleHttpError(res, err);
     }
 
     const reader = res.body?.getReader();
@@ -686,6 +702,10 @@ export class GoogleProvider extends BaseProvider {
     let sawToolCalls = false;
 
     const seenToolCallKeys = new Set<string>();
+    // Stream position of the next tool call. Routes assemble streamed calls by
+    // `index`, so every call needs its own, including parallel calls that
+    // arrive in one chunk.
+    let nextToolIndex = 0;
 
     // Same mid-stream inactivity watchdog as readSseStream (#553): this adapter
     // parses Gemini's own frame format, so it reads the body itself and used to
@@ -745,12 +765,12 @@ export class GoogleProvider extends BaseProvider {
 
           const text = extractText(parts);
           const reasoningContent = extractReasoningContent(parts);
-          const toolCalls = extractToolCalls(parts).filter(call => {
+          const toolCalls = extractToolCalls(parts, nextToolIndex).filter(call => {
             const key = `${call.id}:${call.function.name}:${call.function.arguments}`;
             if (seenToolCallKeys.has(key)) return false;
             seenToolCallKeys.add(key);
             return true;
-          });
+          }).map(call => ({ ...call, index: nextToolIndex++ }));
 
           if ((text && text.length > 0) || (reasoningContent && reasoningContent.length > 0) || toolCalls.length > 0) {
             sawToolCalls = sawToolCalls || toolCalls.length > 0;

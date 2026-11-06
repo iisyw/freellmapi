@@ -19,6 +19,11 @@ export interface ParsedKey {
   /** Custom endpoints only: models declared beside the key via
    *  CUSTOM_<n>_MODELS / <PREFIX>_CUSTOM_MODELS (#382). */
   models?: ParsedModelEntry[];
+  /** Display name carried by a format that has one (CSV column 3, export
+   *  JSON `label`). The import route stores it when present instead of
+   *  falling back to the generated env-var-style name — without it a CSV
+   *  round trip renamed every key. */
+  label?: string;
 }
 
 /** A key/value pair on its way to becoming a ParsedKey. `platform` and
@@ -29,6 +34,7 @@ interface KeyPair {
   value: string;
   platform?: string;
   baseUrl?: string;
+  label?: string;
   models?: ParsedModelEntry[];
 }
 
@@ -39,6 +45,35 @@ export interface ParseResult {
 
 export const PREFIX_MAP: Record<string, string> = {
   ACLIDE_: 'aclide',
+  SPEKA_: 'speka',
+  KENARI_: 'kenari',
+  KIOSAPI_: 'kiosapi',
+  KIOS_: 'kiosapi',
+  BEATAPI_: 'beatapi',
+  APINEX_: 'apinex',
+  ONOMEO_: 'onomeo',
+  ITERACOMPUTE_: 'iteracompute',
+  BEAT_API_: 'beatapi',
+  SERPSEARCH_: 'serpsearch',
+  SERP_SEARCH_: 'serpsearch',
+  BRAVE_SEARCH_: 'brave',
+  BRAVE_: 'brave',
+  TYPHOON_: 'typhoon',
+  PLUGSKY_: 'plugsky',
+  INFERBASE_: 'inferbase',
+  SIMPLELLM_: 'simplellm',
+  SIMPLE_LLM_: 'simplellm',
+  OPENTYPHOON_: 'typhoon',
+  OPEN_TYPHOON_: 'typhoon',
+  LLMTR_: 'llmtr',
+  GIZMO_: 'gizmo',
+  BLOCKRUN_: 'blockrun',
+  MOONDREAM_: 'moondream',
+  JAMAI_: 'jamai',
+  NABH_: 'nabh',
+  NOVAI_: 'novai',
+  FREEINFERENCE_: 'freeinference',
+  FREEMODEL_: 'freemodel',
   GOOGLE_: 'google',
   GEMINI_: 'google',
   GROQ_: 'groq',
@@ -76,8 +111,13 @@ export const PREFIX_MAP: Record<string, string> = {
   NVIDIA_: 'nvidia',
   MISTRAL_: 'mistral',
   OPENROUTER_: 'openrouter',
-  GITHUB_: 'github',
   COHERE_: 'cohere',
+  TAVILY_: 'tavily',
+  EXA_: 'exa',
+  FIRECRAWL_: 'firecrawl',
+  LINKUP_: 'linkup',
+  PARALLEL_: 'parallel',
+  KEENABLE_: 'keenable',
   CLOUDFLARE_: 'cloudflare',
   ZHIPU_: 'zhipu',
   OLLAMA_: 'ollama',
@@ -133,6 +173,36 @@ export const AUTH_JSON_PROVIDER_MAP: Record<string, string> = {
   groq: 'groq',
   sail: 'sail',
   aclide: 'aclide',
+  speka: 'speka',
+  kenari: 'kenari',
+  kiosapi: 'kiosapi',
+  kios: 'kiosapi',
+  beatapi: 'beatapi',
+  apinex: 'apinex',
+  onomeo: 'onomeo',
+  iteracompute: 'iteracompute',
+  serpsearch: 'serpsearch',
+  brave: 'brave',
+  typhoon: 'typhoon',
+  plugsky: 'plugsky',
+  inferbase: 'inferbase',
+  simplellm: 'simplellm',
+  'simple-llm': 'simplellm',
+  opentyphoon: 'typhoon',
+  'open-typhoon': 'typhoon',
+  llmtr: 'llmtr',
+  gizmo: 'gizmo',
+  blockrun: 'blockrun',
+  moondream: 'moondream',
+  jamai: 'jamai',
+  nabh: 'nabh',
+  novai: 'novai',
+  freeinference: 'freeinference',
+  'freeinference.org': 'freeinference',
+  freemodel: 'freemodel',
+  'freemodel.in': 'freemodel',
+  'aiapi-pro.com': 'novai',
+  'nabh.cloud': 'nabh',
   'sail-research': 'sail',
   sailresearch: 'sail',
   electronhub: 'electronhub',
@@ -202,6 +272,12 @@ export const AUTH_JSON_PROVIDER_MAP: Record<string, string> = {
   xfyun: 'xfyun',
   spark: 'xfyun',
   iflytek: 'xfyun',
+  tavily: 'tavily',
+  exa: 'exa',
+  firecrawl: 'firecrawl',
+  linkup: 'linkup',
+  parallel: 'parallel',
+  keenable: 'keenable',
 };
 
 export function detectPlatform(prefix: string): string | null {
@@ -217,6 +293,9 @@ export function parseDotEnv(content: string): Array<{ key: string; value: string
   for (let line of text.split('\n')) {
     line = line.trim();
     if (!line || line.startsWith('#')) continue;
+    // A shell-sourced .env writes `export NAME=value`; the name is NAME, not
+    // `export NAME`, or the provider prefix is never recognised.
+    line = line.replace(/^export\s+/, '');
 
     const eqIndex = line.indexOf('=');
     if (eqIndex === -1) continue;
@@ -236,6 +315,12 @@ export function parseDotEnv(content: string): Array<{ key: string; value: string
       const commentIndex = value.indexOf(' #');
       if (commentIndex !== -1) value = value.slice(0, commentIndex);
       value = value.trimEnd();
+      // A dropped closing quote (`KEY="sk-abc`, typically from editor auto-
+      // quoting or a truncated paste) left the `"` glued to the credential,
+      // and every request with it failed upstream 401 with a message that
+      // never mentions the stray quote. No API key starts with a quote
+      // character, so dropping the opener is always safe.
+      if (quote) value = value.slice(1);
     }
 
     result.set(key, value);
@@ -391,7 +476,7 @@ export function parseExportJson(content: string): ParseResult | null {
         ? (Object.entries(PREFIX_MAP).find(([, v]) => v === platform)?.[0] ?? `${platform.toUpperCase()}_`)
         : '';
       const baseUrl = typeof row.baseUrl === 'string' ? row.baseUrl.trim() : '';
-      result.keys.push({ rawKey: `${label}=${keyValue}`, prefix, platform, ...(baseUrl ? { baseUrl } : {}) });
+      result.keys.push({ rawKey: `${label}=${keyValue}`, prefix, platform, label, ...(baseUrl ? { baseUrl } : {}) });
     }
     return result;
   }
@@ -429,31 +514,65 @@ function splitCsvLine(line: string): string[] {
 }
 
 /**
+ * Split CSV input into complete records, keeping line breaks inside quoted
+ * fields for splitCsvLine() to parse as part of the field value.
+ */
+function splitCsvRecords(content: string): string[] {
+  const records: string[] = [];
+  let recordStart = 0;
+  let inQuotes = false;
+
+  for (let i = 0; i < content.length; i++) {
+    const ch = content[i];
+    if (ch === '"') {
+      if (inQuotes && content[i + 1] === '"') {
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (!inQuotes && (ch === '\n' || (ch === '\r' && content[i + 1] === '\n'))) {
+      records.push(content.slice(recordStart, i));
+      if (ch === '\r') i++;
+      recordStart = i + 1;
+    }
+  }
+
+  records.push(content.slice(recordStart));
+  return records.filter(record => record.trim());
+}
+
+/**
  * Parse CSV format: platform,key,label[,base_url] (with optional header row).
  * The trailing base_url column is what makes a 'custom' row importable — an
  * endpoint is identified by its URL, so a custom key without one is orphaned.
  */
 export function parseCsv(content: string): KeyPair[] {
-  const lines = content.split('\n').filter(l => l.trim());
-  if (lines.length === 0) return [];
+  const records = splitCsvRecords(content);
+  if (records.length === 0) return [];
 
   const result: KeyPair[] = [];
 
   // Skip header row if it looks like a CSV header
-  const startIdx = lines[0]!.toLowerCase().startsWith('platform,') ? 1 : 0;
+  const startIdx = records[0]!.toLowerCase().startsWith('platform,') ? 1 : 0;
 
-  for (let i = startIdx; i < lines.length; i++) {
-    const fields = splitCsvLine(lines[i]!);
+  for (let i = startIdx; i < records.length; i++) {
+    const fields = splitCsvLine(records[i]!);
     const platform = (fields[0] ?? '').trim();
     const key = (fields[1] ?? '').trim();
-    const baseUrl = (fields[3] ?? '').trim();
+    // Undo the export's CSV formula guard (a leading ' before =, +, -, @, tab
+    // or CR) so a guarded label or base_url comes back as the user typed it.
+    const unguard = (v: string) => v.replace(/^'(?=[=+\-@\t\r])/, '');
+    const label = unguard((fields[2] ?? '').trim());
+    const baseUrl = unguard((fields[3] ?? '').trim());
 
     if (!key || !platform) continue;
 
     const envKey = `${platform.toUpperCase()}_KEY`;
     // Name the platform outright rather than re-deriving it from the prefix:
     // 'custom' has no PREFIX_MAP entry, so inference would drop the row.
-    result.push({ key: envKey, value: key, platform, ...(baseUrl ? { baseUrl } : {}) });
+    // The label (column 3) is carried so an export→import round trip keeps
+    // display names: without it every groq key came back named GROQ_KEY.
+    result.push({ key: envKey, value: key, platform, ...(label ? { label } : {}), ...(baseUrl ? { baseUrl } : {}) });
   }
 
   return result;
@@ -666,13 +785,25 @@ function toParsedKeys(pairs: KeyPair[]): ParseResult {
   const keys: ParsedKey[] = [];
   const skipped: string[] = [];
 
-  for (const { key, value, platform: statedPlatform, baseUrl, models } of pairs) {
+  const project = pairs.find(pair => pair.key.toUpperCase() === 'JAMAI_PROJECT_ID')?.value.trim();
+  for (const { key, value: rawValue, platform: statedPlatform, baseUrl, label, models } of pairs) {
+    // Project metadata is not itself a credential. Support the SDK's paired
+    // environment fields as well as our encrypted/exported composite value.
+    if (key.toUpperCase() === 'JAMAI_PROJECT_ID') continue;
+    const value = project && /^JAMAI_(API_KEY|PAT|KEY)$/i.test(key) && !rawValue.includes(':')
+      ? `${project}:${rawValue.trim()}` : rawValue;
     const prefix = extractPrefix(key);
     const platform = statedPlatform ?? detectPlatform(prefix);
+    // The name before `=` becomes the stored label (splitRawKey in the import
+    // route). Formats that carry a display name — export JSON and CSV column 3
+    // — use it here, exactly as parseExportJson does, so an export/import
+    // round trip does not rename every key to the generated <PLATFORM>_KEY.
+    const name = label?.trim() || key;
 
     if (platform) {
       keys.push({
-        rawKey: `${key}=${value}`, prefix, platform,
+        rawKey: `${name}=${value}`, prefix, platform,
+        ...(label ? { label } : {}),
         ...(baseUrl ? { baseUrl } : {}),
         ...(models?.length ? { models } : {}),
       });
@@ -680,7 +811,7 @@ function toParsedKeys(pairs: KeyPair[]): ParseResult {
     }
 
     if (looksLikeApiKey(value)) {
-      keys.push({ rawKey: `${key}=${value}`, prefix, platform: null });
+      keys.push({ rawKey: `${name}=${value}`, prefix, platform: null, ...(label ? { label } : {}) });
     } else {
       skipped.push(`${key}: value does not look like an API key`);
     }

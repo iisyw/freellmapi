@@ -28,9 +28,40 @@ describe('key parser', () => {
     ]);
   });
 
+  it('drops a leading export from shell-style dotenv lines', () => {
+    expect(parseDotEnv('export GROQ_API_KEY=gsk-test\nexport\tGOOGLE_API_KEY="ai-test" # primary')).toEqual([
+      { key: 'GROQ_API_KEY', value: 'gsk-test' },
+      { key: 'GOOGLE_API_KEY', value: 'ai-test' },
+    ]);
+    const result = parseKeysFromFile('export GROQ_API_KEY=gsk_test1234567890', '.env');
+    expect(result.keys).toEqual([
+      expect.objectContaining({ rawKey: 'GROQ_API_KEY=gsk_test1234567890', platform: 'groq' }),
+    ]);
+  });
+
   it('keeps a # that is inside the quotes', () => {
     expect(parseDotEnv('NVIDIA_API_KEY="nv # test"')).toEqual([
       { key: 'NVIDIA_API_KEY', value: 'nv # test' },
+    ]);
+  });
+
+  it('drops an opening quote whose closing quote was lost', () => {
+    // Editor auto-quoting or a truncated paste yields `KEY="sk-abc` — the
+    // credential must not import with the `"` glued to its front.
+    expect(parseDotEnv('OPENAI_API_KEY="sk-abc123')).toEqual([
+      { key: 'OPENAI_API_KEY', value: 'sk-abc123' },
+    ]);
+    expect(parseDotEnv("GROQ_API_KEY='gsk-abc123")).toEqual([
+      { key: 'GROQ_API_KEY', value: 'gsk-abc123' },
+    ]);
+    // ...and the same line with a trailing inline comment.
+    expect(parseDotEnv('OPENAI_API_KEY="sk-abc123 # primary')).toEqual([
+      { key: 'OPENAI_API_KEY', value: 'sk-abc123' },
+    ]);
+    // The end-to-end import path: the value feeds the router as-is.
+    const result = parseKeysFromFile('GROQ_API_KEY="gsk_te...7890', '.env');
+    expect(result.keys).toEqual([
+      expect.objectContaining({ rawKey: 'GROQ_API_KEY=gsk_te...7890', platform: 'groq' }),
     ]);
   });
 
@@ -166,8 +197,8 @@ describe('key parser', () => {
     const result = parseExportJson(exportJson);
     expect(result).not.toBeNull();
     expect(result!.keys).toHaveLength(2);
-    expect(result!.keys[0]).toEqual({ rawKey: 'Google Key=AIza-test-key', prefix: 'GOOGLE_', platform: 'google' });
-    expect(result!.keys[1]).toEqual({ rawKey: 'Groq Key=gsk-test-key', prefix: 'GROQ_', platform: 'groq' });
+    expect(result!.keys[0]).toEqual({ rawKey: 'Google Key=AIza-test-key', prefix: 'GOOGLE_', platform: 'google', label: 'Google Key' });
+    expect(result!.keys[1]).toEqual({ rawKey: 'Groq Key=gsk-test-key', prefix: 'GROQ_', platform: 'groq', label: 'Groq Key' });
     expect(result!.skipped).toHaveLength(0);
   });
 
@@ -183,22 +214,39 @@ describe('key parser', () => {
   it('parses CSV format with header', () => {
     const csv = 'platform,key,label\n"google","AIza-test","Google Key"\n"groq","gsk-test","Groq Key"\n';
     expect(parseCsv(csv)).toEqual([
-      { key: 'GOOGLE_KEY', value: 'AIza-test', platform: 'google' },
-      { key: 'GROQ_KEY', value: 'gsk-test', platform: 'groq' },
+      { key: 'GOOGLE_KEY', value: 'AIza-test', platform: 'google', label: 'Google Key' },
+      { key: 'GROQ_KEY', value: 'gsk-test', platform: 'groq', label: 'Groq Key' },
+    ]);
+  });
+
+  it('parses newlines inside quoted CSV fields', () => {
+    const csv = 'platform,key,label,base_url\n"groq","gsk-test","work\nprimary",""\n';
+    expect(parseCsv(csv)).toEqual([
+      { key: 'GROQ_KEY', value: 'gsk-test', platform: 'groq', label: 'work\nprimary' },
+    ]);
+  });
+
+  it('parses multiline and normal CSV records with CRLF line endings', () => {
+    const csv = 'platform,key,label,base_url\r\n' +
+      '"groq","gsk-test","work\r\nprimary",""\r\n' +
+      '"google","AIza-test","Google Key",""\r\n';
+    expect(parseCsv(csv)).toEqual([
+      { key: 'GROQ_KEY', value: 'gsk-test', platform: 'groq', label: 'work\r\nprimary' },
+      { key: 'GOOGLE_KEY', value: 'AIza-test', platform: 'google', label: 'Google Key' },
     ]);
   });
 
   it('parses CSV format without header', () => {
     const csv = 'google,AIza-test,Google Key\n';
     expect(parseCsv(csv)).toEqual([
-      { key: 'GOOGLE_KEY', value: 'AIza-test', platform: 'google' },
+      { key: 'GOOGLE_KEY', value: 'AIza-test', platform: 'google', label: 'Google Key' },
     ]);
   });
 
   it('parses the base_url column that makes a custom row importable', () => {
     const csv = 'platform,key,label,base_url\n"custom","sk-local","LM Studio","http://192.168.1.5:1234/v1"\n';
     expect(parseCsv(csv)).toEqual([
-      { key: 'CUSTOM_KEY', value: 'sk-local', platform: 'custom', baseUrl: 'http://192.168.1.5:1234/v1' },
+      { key: 'CUSTOM_KEY', value: 'sk-local', platform: 'custom', label: 'LM Studio', baseUrl: 'http://192.168.1.5:1234/v1' },
     ]);
   });
 
@@ -210,9 +258,21 @@ describe('key parser', () => {
       '"groq","gsk-abc","work, primary",""\n' +
       '"google","AIza-test","say ""hi""",""\n';
     expect(parseCsv(csv)).toEqual([
-      { key: 'GROQ_KEY', value: 'gsk-abc', platform: 'groq' },
-      { key: 'GOOGLE_KEY', value: 'AIza-test', platform: 'google' },
+      { key: 'GROQ_KEY', value: 'gsk-abc', platform: 'groq', label: 'work, primary' },
+      { key: 'GOOGLE_KEY', value: 'AIza-test', platform: 'google', label: 'say "hi"' },
     ]);
+  });
+
+  it('strips the formula-guard quote from base_url as well as the label', () => {
+    // What GET /api/keys/export?format=csv writes when a custom endpoint's
+    // base_url opens with '=' — the importer has to undo the guard on the
+    // fourth column too, or the endpoint re-imports as a broken "'=..." URL.
+    const csv = 'platform,key,label,base_url\n' +
+      '"custom","sk-local","\'=HYPERLINK(""x"")","\'=HYPERLINK(""http://evil"")"\n';
+    const rows = parseCsv(csv);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.label).toBe('=HYPERLINK("x")');
+    expect(rows[0]!.baseUrl).toBe('=HYPERLINK("http://evil")');
   });
 
   it('round-trips a full export through parseKeysFromFile', () => {
@@ -224,6 +284,11 @@ describe('key parser', () => {
     expect(result.skipped).toEqual([]);
     expect(result.keys.map(k => k.platform)).toEqual(['groq', 'custom']);
     expect(result.keys[1]!.baseUrl).toBe('http://192.168.1.5:1234/v1');
+    // Labels survive the round trip: rawKey's name half is what the import
+    // route stores as the key label, so an export/import cycle used to
+    // rename every key to the generated GROQ_KEY / CUSTOM_KEY.
+    expect(result.keys[0]!.rawKey).toBe('work, primary=gsk-abc');
+    expect(result.keys[1]!.rawKey).toBe('say "hi"=sk-local');
   });
 
   it('handles export JSON via parseKeysFromFile', () => {
@@ -237,13 +302,15 @@ describe('key parser', () => {
     });
     const result = parseKeysFromFile(exportJson, 'freellmapi-keys.json');
     expect(result.keys).toHaveLength(1);
-    expect(result.keys[0]).toEqual({ rawKey: 'Mistral Key=mist-test', prefix: 'MISTRAL_', platform: 'mistral' });
+    expect(result.keys[0]).toEqual({ rawKey: 'Mistral Key=mist-test', prefix: 'MISTRAL_', platform: 'mistral', label: 'Mistral Key' });
   });
 
   it('handles CSV via parseKeysFromFile', () => {
     const csv = 'platform,key,label\n"nvidia","nv-test","Nvidia Key"\n';
     const result = parseKeysFromFile(csv, 'freellmapi-keys.csv');
     expect(result.keys).toHaveLength(1);
-    expect(result.keys[0]).toEqual({ rawKey: 'NVIDIA_KEY=nv-test', prefix: 'NVIDIA_', platform: 'nvidia' });
+    // The CSV label wins over the generated name, matching the export JSON
+    // path above: the import route stores the rawKey name as the label.
+    expect(result.keys[0]).toEqual({ rawKey: 'Nvidia Key=nv-test', prefix: 'NVIDIA_', platform: 'nvidia', label: 'Nvidia Key' });
   });
 });
